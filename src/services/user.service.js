@@ -1,17 +1,18 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const { Users } = require('../models');
 const ApiError = require('../utils/ApiError');
 
-/**
- * Create a user
- * @param {Object} userBody
- * @returns {Promise<User>}
- */
 const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  try {
+    const emailExist = await Users.findOne({ where: { email: userBody.email } });
+    if (emailExist !== null) {
+      return { statusVale: 0, statusText: "Email already exist" }
+    }
+    const users = await Users.create(userBody);
+    return users;
+  } catch (error) {
+    return error
   }
-  return User.create(userBody);
 };
 
 /**
@@ -43,7 +44,7 @@ const getUserById = async (id) => {
  * @returns {Promise<User>}
  */
 const getUserByEmail = async (email) => {
-  return User.findOne({ email });
+  return Users.findOne({ where: { email: email } });
 };
 
 /**

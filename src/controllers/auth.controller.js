@@ -4,15 +4,24 @@ const { authService, userService, tokenService, emailService } = require('../ser
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
+  if (user.statusValue === 0) {
+    res.status(500).json(user)
+  } else {
+    const tokens = await tokenService.generateAuthTokens(user);
+    res.status(201).send({ statusValue: 1, statusText: "User created Successfully", tokens });
+  }
 });
 
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  const user = await authService.loginUserWithEmailAndPassword(email, password);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.send({ user, tokens });
+  const userData = await authService.loginUserWithEmailAndPassword(email, password);
+  if (userData.statusValue === 0) {
+    res.send(userData)
+  } else {
+    const { password, ...user } = userData.toJSON();
+    const tokens = await tokenService.generateAuthTokens(userData);
+    res.send({ user, tokens });
+  }
 });
 
 const logout = catchAsync(async (req, res) => {

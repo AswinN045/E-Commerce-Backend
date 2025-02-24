@@ -1,91 +1,80 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const { toJSON, paginate } = require('./plugins');
-const { roles } = require('../config/roles');
+const { Model, Sequelize } = require('sequelize');
+const bcrypt = require('bcryptjs')
 
-const userSchema = mongoose.Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-      lowercase: true,
-      validate(value) {
-        if (!validator.isEmail(value)) {
-          throw new Error('Invalid email');
+module.exports = (sequelize, DataTypes) => {
+  class Users extends Model {
+
+    validPassword(password) {
+      return bcrypt.compareSync(password, this.password);
+    }
+  }
+  Users.init(
+    {
+      id: {
+        type: DataTypes.BIGINT,
+        field: "id",
+        primaryKey: true,
+        unique: true,
+        allowNull: false,
+        autoIncrement: true,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true
         }
       },
-    },
-    password: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 8,
-      validate(value) {
-        if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
-          throw new Error('Password must contain at least one letter and one number');
-        }
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false
       },
-      private: true, // used by the toJSON plugin
+      role: {
+        type: DataTypes.ENUM("Admin", "Customer"),
+        allowNull: false,
+        defaultValue: "Customer"
+      },
+      uUserId: {
+        type: DataTypes.UUID,
+        field: "u_user_id",
+        defaultValue: Sequelize.UUIDV4,
+        unique: true,
+      }
     },
-    role: {
-      type: String,
-      enum: roles,
-      default: 'user',
-    },
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+    {
+      sequelize,
+      modelName: 'Users',
+      schema: 'e_commerce',
+      tableName: 'users',
+      freezeTableName: true,
+      paranoid: true,
+      timestamps: false,
+      hooks: {
+        beforeCreate: async (user) => {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        },
+        beforeUpdate: async (user) => {
+          if (user.changed('password')) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+          }
+        }
+      }
+    }
+  );
 
-// add plugin that converts mongoose to json
-userSchema.plugin(toJSON);
-userSchema.plugin(paginate);
+  Users.sync({ force: false })
+    .then(() => {
+    })
+    .catch((error) => {
+      console.error('Error creating user table:', error);
+    });
 
-/**
- * Check if email is taken
- * @param {string} email - The user's email
- * @param {ObjectId} [excludeUserId] - The id of the user to be excluded
- * @returns {Promise<boolean>}
- */
-userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
-  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
-  return !!user;
+  return Users;
 };
-
-/**
- * Check if password matches the user's password
- * @param {string} password
- * @returns {Promise<boolean>}
- */
-userSchema.methods.isPasswordMatch = async function (password) {
-  const user = this;
-  return bcrypt.compare(password, user.password);
-};
-
-userSchema.pre('save', async function (next) {
-  const user = this;
-  if (user.isModified('password')) {
-    user.password = await bcrypt.hash(user.password, 8);
-  }
-  next();
-});
-
-/**
- * @typedef User
- */
-const User = mongoose.model('User', userSchema);
-
-module.exports = User;

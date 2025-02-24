@@ -1,15 +1,50 @@
-const mongoose = require('mongoose');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
+const db = require("./db")
 
 let server;
-mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
-  logger.info('Connected to MongoDB');
-  server = app.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
+
+function initNotificationConnection(delaySecs = 0, maxAttempts = 1) {
+  return new Promise((resolve, reject) => {
+    const connect = () => {
+      db.connect({
+        direct: true,
+        onLost: () => {
+          console.log('Connection Lost');
+        },
+      })
+        .then((obj) => {
+          notificationConn = obj;
+          return resolve(obj);
+          // return addNotificationListener();
+        })
+        .catch((err) => {
+          console.log('notification connection init error: ', err);
+          maxAttempts = maxAttempts - 1;
+          if (0 < maxAttempts) {
+            initNotificationConnection(delaySecs, maxAttempts).then(resolve).catch(reject);
+          } else {
+            reject(err);
+          }
+        });
+    };
+    setTimeout(connect, 1000 * delaySecs);
   });
-});
+}
+
+initNotificationConnection()
+  .then(() => {
+    logger.info('PostgreSQL DB connected');
+    app.listen(config.port, () => {
+      logger.info(`Listening to port ${config.port}`);
+    });
+  })
+  .catch((err) => {
+    console.log('failed to establish notification connection: ', err);
+  });
+
+
 
 const exitHandler = () => {
   if (server) {
