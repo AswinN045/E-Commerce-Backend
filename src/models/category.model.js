@@ -7,7 +7,7 @@ const { Model, Sequelize } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Categories extends Model {
         static associate(models) {
-            Categories.hasMany(models.Product, {
+            Categories.hasMany(models.Products, {
                 foreignKey: 'categoryId',
                 as: 'products'
             });
@@ -36,8 +36,8 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             sequelize,
-            modelName: 'Category',
-            tableName: 'category',
+            modelName: 'Categories',
+            tableName: 'categories',
             schema: 'e_commerce',
             timestamps: true,
             paranoid: true

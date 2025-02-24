@@ -8,8 +8,8 @@ const router = express.Router();
 
 router.post('/register', validate(authValidation.register), authController.register);
 router.post('/login', validate(authValidation.login), authController.login);
-router.post('/logout', jwtAuthMiddleware, validate(authValidation.logout), authController.logout);
-router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
+// router.post('/logout', jwtAuthMiddleware, validate(authValidation.logout), authController.logout);
+// router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 
 module.exports = router;
 
@@ -36,6 +36,7 @@ module.exports = router;
  *               - name
  *               - email
  *               - password
+ *               - role
  *             properties:
  *               name:
  *                 type: string
@@ -48,10 +49,14 @@ module.exports = router;
  *                 format: password
  *                 minLength: 8
  *                 description: At least one number and one letter
+ *               role:
+ *                 type: string
+ *                 description: role should be either Admin or Customer
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
+ *               role: Customer
  *     responses:
  *       "201":
  *         description: Created

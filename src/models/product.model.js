@@ -2,8 +2,12 @@ const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Products extends Model {
-
-
+        static associate(models) {
+            Products.belongsTo(models.Categories, {
+                foreignKey: 'id',
+                as: 'products'
+            });
+        }
     }
     Products.init(
         {
@@ -58,11 +62,11 @@ module.exports = (sequelize, DataTypes) => {
             tableName: 'products',
             freezeTableName: true,
             paranoid: true,
-            timestamps: true
+            timestamps: false
         }
     );
 
-    Products.sync({ force: false })
+    Products.sync({ force: true })
         .then(() => {
         })
         .catch((error) => {
