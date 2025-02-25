@@ -57,6 +57,45 @@ components:
         data:
           type: object
 
+    products:
+      type: object
+      properties:
+        satusValue:
+          type: number
+        statsText:
+          type: string
+        data:
+          type: object
+          properties:
+            products:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  price:
+                    type: number
+                  stock:
+                    type: integer
+                  categoryId:
+                    type: integer
+                  imageUrl:
+                    type: string
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      totalItems:
+                        type: integer
+                      itemsPerPage:
+                        type: integer
+
   responses:
     Unauthorized:
       description: Unauthorized

@@ -25,7 +25,8 @@ const models = {
     sequelize,
     Users: require('./user.model')(sequelize, Sequelize.DataTypes),
     Products: require('./product.model')(sequelize, Sequelize.DataTypes),
-    Categories: require('./category.model')(sequelize, Sequelize.DataTypes)
+    Categories: require('./category.model')(sequelize, Sequelize.DataTypes),
+    Cart: require('./cart.model')(sequelize, Sequelize.DataTypes)
 
 };
 
