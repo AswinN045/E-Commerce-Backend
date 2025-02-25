@@ -14,7 +14,10 @@ const envVarsSchema = Joi.object()
     DB_HOST: Joi.string().required().description('host'),
     DB_USER: Joi.string().required().description('database user'),
     DATABASE: Joi.string().required().description('database '),
-    DB_PASSWORD: Joi.string().required().description('password')
+    DB_PASSWORD: Joi.string().required().description('password'),
+    CLOUDINARY_CLOUD_NAME: Joi.string().required().description('valid cloudinary name'),
+    CLOUDINARY_API_KEY: Joi.string().required().description('valid cloudinary api key'),
+    CLOUDINARY_API_SECRET: Joi.string().required().description('valid cloudinary secret key'),
   })
   .unknown();
 
@@ -37,5 +40,11 @@ module.exports = {
     database: envVars.DATABASE,
     user: envVars.DB_USER,
     password: envVars.DB_PASSWORD
+  },
+  cloud: {
+    cloudName: envVars.CLOUDINARY_CLOUD_NAME,
+    cloudKey: envVars.CLOUDINARY_API_KEY,
+    cloudSecret: envVars.CLOUDINARY_API_SECRET
   }
 };
+

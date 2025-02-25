@@ -4,8 +4,9 @@ module.exports = (sequelize, DataTypes) => {
     class Products extends Model {
         static associate(models) {
             Products.belongsTo(models.Categories, {
-                foreignKey: 'id',
-                as: 'products'
+                foreignKey: 'categoryId',
+                targetKey: 'id',
+                as: 'category'
             });
         }
     }
@@ -66,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Products.sync({ force: true })
+    Products.sync({ force: false })
         .then(() => {
         })
         .catch((error) => {

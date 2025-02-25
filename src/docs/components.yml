@@ -12,12 +12,12 @@ components:
           type: string
         role:
           type: string
-          enum: [user, admin]
+          enum: [Customer, Admin]
       example:
-        id: 5ebac534954b54139806c112
+        id: 1
         email: fake@example.com
         name: fake name
-        role: user
+        role: Customer
 
     Token:
       type: object
@@ -47,16 +47,17 @@ components:
         message:
           type: string
 
+    responseSchema:
+      type: object
+      properties:
+        satusValue:
+          type: number
+        statsText:
+          type: string
+        data:
+          type: object
+
   responses:
-    DuplicateEmail:
-      description: Email already taken
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            code: 400
-            message: Email already taken
     Unauthorized:
       description: Unauthorized
       content:
