@@ -9,6 +9,12 @@ const router = express.Router();
 
 router.get('/list-products', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.listProducts), customerController.listProducts);
 router.post('/add-to-cart', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.addToCart), customerController.addToCart);
+router.delete('/remove-from-cart/:id', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.removeFromCart), customerController.removeFromCart);
+router.get('/view-cart', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.viewCart), customerController.viewCart);
+router.post('/place-orders', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.placeOrders), customerController.placeOrders);
+router.get('/view-order-history', jwtAuthMiddleware, authorizeRole(['Customer']), validate(customerValidation.viewOrderHistory), customerController.viewOrderHistory);
+
+
 
 
 module.exports = router;
@@ -17,14 +23,15 @@ module.exports = router;
  * @swagger
  * tags:
  *   name: Customer
- *   description: Product retreival and orders management. Authorize using access token from the **auth/login** endpoint.
+ *   description: The `Product` retreival, `Cart` and `Orders` management. Authorize using access token from the **auth/login** endpoint. Only the cstomers have the access to this endpoints.
  */
 
 /**
  * @swagger
  * /customer/list-products:
  *   get:
- *     summary: List products with filters (Customer)
+ *     summary: List products with filters (Customer).
+ *     description: Filter incldes minimum price - maximum price, category name, product name.
  *     tags: [Customer]
  *     security:
  *       - bearerAuth: []
@@ -76,7 +83,8 @@ module.exports = router;
  * @swagger
  * /customer/add-to-cart:
  *   post:
- *     summary: items add to the cart
+ *     summary: Items add to the cart.
+ *     description: You will get the `productId` from the **customer/list-products** end poiint.
  *     tags: [Customer]
  *     security:
  *       - bearerAuth: []
@@ -105,7 +113,90 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/products'   
+ *               $ref: '#/components/schemas/responseSchema'   
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /customer/remove-from-cart/{id}:
+ *   delete:
+ *     summary: Remove items from the cart. 
+ *     description: You can view your cart details using the **customer/view-cart** endpoint, where you’ll retrieve the id needed for removal.
+ *     tags: [Customer]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: cart item id
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/responseSchema'   
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /customer/view-cart:
+ *   get:
+ *     summary: View the entire cart.
+ *     tags: [Customer]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/responseSchema'   
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /customer/place-orders:
+ *   post:
+ *     summary: Users can place an order for the items in their cart.
+ *     tags: [Customer]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/responseSchema'   
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * @swagger
+ * /customer/view-order-history:
+ *   get:
+ *     summary: View the entire history of the orders.
+ *     tags: [Customer]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/responseSchema'   
  *       500:
  *         description: Internal server error
  */

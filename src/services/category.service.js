@@ -12,7 +12,7 @@ const insertCategory = async (category) => {
 
 };
 
-const updateCategory = async (category) => {
+const updateCategory = async (id, category) => {
     try {
         const data = await Categories.update({
             name: category.name,
@@ -20,7 +20,7 @@ const updateCategory = async (category) => {
         },
             {
                 where: {
-                    id: category.id
+                    id: id
                 }
             });
         if (data[0] === 0) {

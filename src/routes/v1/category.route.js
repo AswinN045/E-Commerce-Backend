@@ -8,7 +8,7 @@ const categoryController = require('../../controllers/category.controller');
 const router = express.Router();
 
 router.post('/insert-category', jwtAuthMiddleware, authorizeRole(['Admin']), validate(categoryValidation.insertCategory), categoryController.insertCategory);
-router.patch('/update-category', jwtAuthMiddleware, authorizeRole(['Admin']), validate(categoryValidation.updateCategory), categoryController.updateCategory);
+router.patch('/update-category/:id', jwtAuthMiddleware, authorizeRole(['Admin']), validate(categoryValidation.updateCategory), categoryController.updateCategory);
 router.delete('/delete-category/:id', jwtAuthMiddleware, authorizeRole(['Admin']), validate(categoryValidation.deleteCategory), categoryController.deleteCategory);
 router.get('/list-categories', jwtAuthMiddleware, authorizeRole(['Admin']), validate(categoryValidation.listCategories), categoryController.listCategories);
 
@@ -19,7 +19,7 @@ module.exports = router;
  * @swagger
  * tags:
  *   name: Categories
- *   description: Category management and retrieval. Authorize withaccess token from the **auth/login** endpoint.
+ *   description: Category management and retrieval. Authorize withaccess token from the **auth/login** endpoint. Only admin have the acces to the tags.
  */
 
 /**
@@ -27,7 +27,7 @@ module.exports = router;
  * /category/insert-category:
  *   post:
  *     summary: Create a category
- *     description: Only admins can create categories.
+ *     description: Create a category.
  *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
@@ -62,30 +62,32 @@ module.exports = router;
 
 /**
  * @swagger
- * /category/update-category:
+ * /category/update-category/{id}:
  *   patch:
  *     summary: Update a category
- *     description: Logged in admin can only update the category.
+ *     description: Update the category. Yo will get the `id` from the **category/list-categories** end point.
  *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: number
+ *         description: category id
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - id
  *             properties:
- *               id:
- *                 type: number
  *               name:
  *                 type: string
  *               description:
  *                 type: string
  *             example:
- *               id: 2
  *               name: Clothings
  *               description: Clothing details
  *     responses:
@@ -108,7 +110,7 @@ module.exports = router;
  * /category/delete-category/{id}:
  *   delete:
  *     summary: Delete a category
- *     description: Logged in admin can only delete the category.
+ *     description: Logged in admin can only delete the category. Yo will get the `id` from **category/list-categories** end point which you want to delete.
  *     tags: [Categories]
  *     security:
  *       - bearerAuth: []
@@ -117,8 +119,8 @@ module.exports = router;
  *         name: id
  *         required: true
  *         schema:
- *           type: string
- *         description: User id
+ *           type: number
+ *         description: category id
  *     responses:
  *       "200":
  *         description: OK
@@ -133,6 +135,7 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
+
 /**
  * @swagger
  * /category/list-categories:

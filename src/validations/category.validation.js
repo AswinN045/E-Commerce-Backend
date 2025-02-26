@@ -14,12 +14,14 @@ const insertCategory = {
 };
 
 const updateCategory = {
-    body: {
+    params: {
         id: {
             notEmpty: true,
             isNumeric: true,
             errorMessage: "catgory id is required"
         },
+    },
+    body: {
         name: {
             optional: true,
             isString: true,

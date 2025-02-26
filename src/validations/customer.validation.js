@@ -48,9 +48,32 @@ const addToCart = {
             errorMessage: 'Qantity is required'
         }
     },
-}
+};
+
+const removeFromCart = {
+    params: {
+        id: {
+            notEmpty: true,
+            isInt: true,
+            errorMessage: 'id is required'
+        }
+    },
+};
+
+const viewCart = {
+};
+
+const placeOrders = {
+};
+
+const viewOrderHistory = {
+};
 
 module.exports = {
     listProducts,
-    addToCart
+    addToCart,
+    removeFromCart,
+    viewCart,
+    placeOrders,
+    viewOrderHistory
 }

@@ -13,11 +13,11 @@ const insertCategory = catchAsync(async (req, res) => {
 });
 
 const updateCategory = catchAsync(async (req, res) => {
-    const data = await categoryService.updateCategory(req.body);
+    const data = await categoryService.updateCategory(req.params.id, req.body);
     if (data.statusValue === 0) {
         res.status(500).json(data);
     } else {
-        res.status(201).json(data);
+        res.status(200).json(data);
     }
 
 });
@@ -27,7 +27,7 @@ const deleteCategory = catchAsync(async (req, res) => {
     if (data.statusValue === 0) {
         res.status(500).json(data);
     } else {
-        res.status(201).json(data);
+        res.status(200).json(data);
     }
 
 });
@@ -37,7 +37,7 @@ const listCategories = catchAsync(async (req, res) => {
     if (data.statusValue === 0) {
         res.status(500).json(data);
     } else {
-        res.status(201).json(data);
+        res.status(200).json(data);
     }
 
 });

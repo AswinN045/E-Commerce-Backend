@@ -37,9 +37,9 @@ const deleteProduct = async (id) => {
 const listProducts = async () => {
     try {
         const data = await Products.findAll();
-        return { statusValue: 1, statusText: "Product inserted successfully", data };
+        return { statusValue: 1, statusText: "Product details fetched successfully", data };
     } catch (e) {
-        return { statusValue: 0, statusText: "Product insertion failed" }
+        return { statusValue: 0, statusText: "Failed to fetch details" }
     }
 };
 

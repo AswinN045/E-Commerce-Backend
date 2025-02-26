@@ -28,7 +28,7 @@ module.exports = router;
  * @swagger
  * tags:
  *   name: Uploads
- *   description: upload images. Authorize using access token from the **auth/login** endpoint.
+ *   description: upload images. Authorize using access token from the **auth/login** endpoint. Only admins have access to the products
  */
 
 /**
@@ -36,7 +36,7 @@ module.exports = router;
  * /product/insert-product:
  *   post:
  *     summary: Create a product
- *     description: Only admins can create products. The `categoryId` is obtained from the **category/list-categories** endpoint; use the `id` from the response corresponding to each category. The `imageUrl` is retrieved from the **Upload** tag, specifically from the `imageUrl` in the response of the **product/upload-image** endpoint.
+ *     description: The `categoryId` is obtained from the **category/list-categories** endpoint; use the `id` from the response corresponding to each category. The `imageUrl` is retrieved from the **Upload** tag, specifically from the `imageUrl` in the response of the **product/upload-image** endpoint.
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -145,7 +145,7 @@ module.exports = router;
  * /product/delete-product/{id}:
  *   delete:
  *     summary: Delete a product
- *     description: Logged in admin can only delete the prodct.The corresponding product `id` will get from the **prodct/list-products** end point.
+ *     description: Logged in admin can only delete the product.The corresponding product `id` will get from the **product/list-products** end point.
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -176,7 +176,7 @@ module.exports = router;
  * /product/list-products:
  *   get:
  *     summary: List all the products
- *     description: Logged in admin can only view the categories.
+ *     description: Admin an lists the enire prodcts thats created.
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []

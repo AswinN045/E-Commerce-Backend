@@ -1,7 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
 const xss = require('xss-clean');
-const mongoSanitize = require('express-mongo-sanitize');
 const compression = require('compression');
 const cors = require('cors');
 const passport = require('passport');
@@ -21,18 +20,13 @@ if (config.env !== 'test') {
   app.use(morgan.errorHandler);
 }
 
-// set security HTTP headers
 app.use(helmet());
 
-// parse json request body
 app.use(express.json());
 
-// parse urlencoded request body
 app.use(express.urlencoded({ extended: true }));
 
-// sanitize request data
 app.use(xss());
-app.use(mongoSanitize());
 
 // gzip compression
 app.use(compression());
@@ -49,6 +43,13 @@ passport.use('jwt', jwtStrategy);
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
+
+app.use((req, res, next) => {
+  if (!req.path.endsWith('/') && req.method === 'GET') {
+    return res.redirect(301, req.path + '/');
+  }
+  next();
+});
 
 // v1 api routes
 app.use('/v1', routes);
